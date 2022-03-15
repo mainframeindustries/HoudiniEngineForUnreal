@@ -2285,7 +2285,6 @@ UHoudiniAssetBlueprintComponent::CacheBlueprintData()
 #if WITH_EDITOR
 	CachedAssetEditorSubsystem = GEditor->GetEditorSubsystem<UAssetEditorSubsystem>();
 #endif
-	
 #if WITH_EDITORONLY_DATA
 	UBlueprintGeneratedClass* BPGC = Cast<UBlueprintGeneratedClass>(GetOuter());
 	if (BPGC)

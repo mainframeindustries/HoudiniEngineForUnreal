@@ -45,6 +45,7 @@
 #include "ActorFactories/ActorFactory.h"
 #include "FileHelpers.h"
 #include "PropertyPathHelpers.h"
+#include "Components/SceneComponent.h"
 
 #define LOCTEXT_NAMESPACE HOUDINI_LOCTEXT_NAMESPACE 
 
@@ -618,7 +619,7 @@ FHoudiniEngineEditorUtils::ReselectSelectedActors()
 	// TODO: Duplicate with FHoudiniEngineUtils::UpdateEditorProperties ??
 	USelection* Selection = GEditor->GetSelectedActors();
 	TArray<AActor*> SelectedActors;
-	SelectedActors.SetNumUninitialized(GEditor->GetSelectedActorCount());
+	SelectedActors.SetNum(GEditor->GetSelectedActorCount());
 	Selection->GetSelectedObjects(SelectedActors);
 
 	GEditor->SelectNone(false, false, false);

@@ -502,10 +502,11 @@ FHoudiniEngineUtils::FindWorldInPackage(const FString& PackagePath, bool bCreate
 
 	if (!IsValid(PackageWorld) && bCreateMissingPackage)
 	{
+		const FName ShortName(FPackageName::GetShortName(PackagePath));
 		// The map for this tile does not exist. Create one
 		UWorldFactory* Factory = NewObject<UWorldFactory>();
 		Factory->WorldType = EWorldType::Inactive; // World that is being loaded but not currently edited by editor.
-		PackageWorld = CastChecked<UWorld>(Factory->FactoryCreateNew(UWorld::StaticClass(), Package, NAME_None, RF_Public | RF_Standalone, NULL, GWarn));
+		PackageWorld = CastChecked<UWorld>(Factory->FactoryCreateNew(UWorld::StaticClass(), Package, ShortName, RF_Public | RF_Standalone, NULL, GWarn));
 
 		if (IsValid(PackageWorld))
 		{
@@ -630,19 +631,20 @@ void FHoudiniEngineUtils::LogPackageInfo(const UPackage* InPackage)
 
 	HOUDINI_LOG_MESSAGE(TEXT(" = Filename: %s"), *(InPackage->GetLoadedPath().GetPackageName()));
 	HOUDINI_LOG_MESSAGE(TEXT(" = Package Id: %d"), InPackage->GetPackageId().ValueForDebugging());
-	HOUDINI_LOG_MESSAGE(TEXT(" = File size: %d"), InPackage->FileSize);
+	HOUDINI_LOG_MESSAGE(TEXT(" = File size: %d"), InPackage->GetFileSize());
 	HOUDINI_LOG_MESSAGE(TEXT(" = Contains map: %d"), InPackage->ContainsMap());
 	HOUDINI_LOG_MESSAGE(TEXT(" = Is Fully Loaded: %d"), InPackage->IsFullyLoaded());
 	HOUDINI_LOG_MESSAGE(TEXT(" = Is Dirty: %d"), InPackage->IsDirty());
 
-	if (InPackage->WorldTileInfo.IsValid())
+	FWorldTileInfo* WorldTileInfo = InPackage->GetWorldTileInfo();
+	if (WorldTileInfo)
 	{
-		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Position: %s"), *(InPackage->WorldTileInfo->Position.ToString()));
-		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Absolute Position: %s"), *(InPackage->WorldTileInfo->AbsolutePosition.ToString()));
-		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Bounds: %s"), *(InPackage->WorldTileInfo->Bounds.ToString()));
-		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - HidInTileView: %d"), InPackage->WorldTileInfo->bHideInTileView);
-		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - ZOrder: %d"), InPackage->WorldTileInfo->ZOrder);
-		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Parent tile package: %s"), *(InPackage->WorldTileInfo->ParentTilePackageName));
+		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Position: %s"), *(WorldTileInfo->Position.ToString()));
+		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Absolute Position: %s"), *(WorldTileInfo->AbsolutePosition.ToString()));
+		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Bounds: %s"), *(WorldTileInfo->Bounds.ToString()));
+		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - HidInTileView: %d"), WorldTileInfo->bHideInTileView);
+		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - ZOrder: %d"), WorldTileInfo->ZOrder);
+		HOUDINI_LOG_MESSAGE(TEXT(" = WorldTileInfo - Parent tile package: %s"), *(WorldTileInfo->ParentTilePackageName));
 	}
 	else
 	{
@@ -1724,7 +1726,7 @@ FHoudiniEngineUtils::GetSubAssetNames(
 		return false;
 	}
 
-	OutAssetNames.SetNumUninitialized(AssetCount);
+	OutAssetNames.SetNum(AssetCount);
 	Result = FHoudiniApi::GetAvailableAssets(FHoudiniEngine::Get().GetSession(), AssetLibraryId, &OutAssetNames[0], AssetCount);
 	if (Result != HAPI_RESULT_SUCCESS)
 	{
@@ -6132,9 +6134,9 @@ FHoudiniEngineUtils::ContainsInvalidLightmapFaces(const FRawMesh & RawMesh, int3
 
 	for (int32 Idx = 0; Idx < Indices.Num(); Idx += 3)
 	{
-		const FVector2D & uv0 = LightmapUVs[Idx + 0];
-		const FVector2D & uv1 = LightmapUVs[Idx + 1];
-		const FVector2D & uv2 = LightmapUVs[Idx + 2];
+		const FVector2f& uv0 = LightmapUVs[Idx + 0];
+		const FVector2f& uv1 = LightmapUVs[Idx + 1];
+		const FVector2f& uv2 = LightmapUVs[Idx + 2];
 
 		if (uv0 == uv1 && uv1 == uv2)
 		{
