@@ -6922,7 +6922,8 @@ FHoudiniEngineUtils::UpdateGenericPropertiesAttributes(
 
 		// Success!
 		NumSuccess++;
-#if defined(HOUDINI_ENGINE_LOGGING)
+//#if defined(HOUDINI_ENGINE_LOGGING)  // remved Mainframe, from support, to reduce log spam
+#if 0
 		const FString ClassName = InObject->GetClass() ? InObject->GetClass()->GetName() : TEXT("Object");
 		const FString ObjectName = InObject->GetName();
 		HOUDINI_LOG_MESSAGE(TEXT("Modified UProperty %s on %s named %s"), *CurrentPropAttribute.AttributeName, *ClassName, *ObjectName);
