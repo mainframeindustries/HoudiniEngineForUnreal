@@ -155,6 +155,9 @@
 #include "HoudiniFoliageUtils.h"
 
 
+// mainframe fpr 5.2
+#include "SkeletalMeshTypes.h"
+
 HOUDINI_BAKING_DEFINE_LOG_CATEGORY();
 
 #define LOCTEXT_NAMESPACE HOUDINI_LOCTEXT_NAMESPACE

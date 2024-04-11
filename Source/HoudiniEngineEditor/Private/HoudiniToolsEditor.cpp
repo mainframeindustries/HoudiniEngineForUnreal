@@ -81,9 +81,13 @@
 	#include "EditorAssetLibrary.h"
 #endif
 
-#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 3
+// mf for 5.2
+#if ENGINE_MAJOR_VERSION == 5 && ENGINE_MINOR_VERSION >= 2
 	#include "TextureResource.h"
 #endif
+
+// mf for 5.2
+#include "Engine/Texture2D.h"
 
 #ifdef LOCTEXT_NAMESPACE
 // This undef is here to get rid of the definition from UE's DecoratedDragDropOp.h.
